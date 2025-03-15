@@ -4,7 +4,6 @@ import streamlit as st
 import os
 from scipy.spatial.distance import cdist
 
-# Load Model
 file_path = r'C:\Belajar Data\Intern BCC\2-Faza-Grace\Deploy\agg_clustering_Kelompok2.pkl'
 centroid_path = r"C:\Belajar Data\Intern BCC\2-Faza-Grace\Deploy\centroids.npy"
 scaler_path = r"C:\Belajar Data\Intern BCC\2-Faza-Grace\Deploy\scaler.pkl"
@@ -25,18 +24,35 @@ with open(scaler_path, "rb") as f:
 with open(encoder_path, "rb") as f:
     encoder = pickle.load(f)
 
-# UI
 st.title('Clustering Zona Berdasarkan Polutan dan Cuaca')
 
-carbon_monoxide = st.number_input('Input kadar Karbon Monoxide')
-quality_ozone = st.number_input('Input kadar Ozone')
-shulphur_dioxide = st.number_input('Input kadar Shulphur Dioxide')
-nitrogen_dioxide = st.number_input('Input kadar Nitrogen Dioxide')
-pm25 = st.number_input('Input kadar PM 2.5')
-pm10 = st.number_input('Input kadar PM 10')
-wind_kph = st.number_input('Input Rata Rata Kecepatan Angin')
-humidity = st.number_input('Input Rata Rata Kelembapan')
-temperature = st.number_input('Input Rata Rata Suhu')
+col1, col2 = st.columns(2)
+
+with col1:
+    carbon_monoxide = st.number_input('Input kadar Karbon Monoxide (ppb)')
+    
+with col2:
+    pm25 = st.number_input('Input kadar PM 2.5 (µg/m³)')
+
+with col1:
+    quality_ozone = st.number_input('Input kadar Ozone (ppb)')
+    
+with col2:
+    pm10 = st.number_input('Input kadar PM 10 (µg/m³)')
+
+with col1:
+    shulphur_dioxide = st.number_input('Input kadar Shulphur Dioxide (ppb)')
+
+with col2:
+    wind_kph = st.number_input('Input Rata Rata Kecepatan Angin (km/h)')
+
+with col1:
+    nitrogen_dioxide = st.number_input('Input kadar Nitrogen Dioxide (ppb)')
+
+with col2:
+    humidity = st.number_input('Input Rata Rata Kelembapan (%)')
+
+temperature = st.number_input('Input Rata Rata Suhu (C°)')
 
 pm_ratio = pm25 / (pm10 + 1e-5)
 
@@ -65,15 +81,14 @@ zona_cluster = ''
 if st.button('Test'):
     input_ready = np.array(input_ready).reshape(1, -1)
     
-    # Menentukan cluster berdasarkan jarak ke centroid
     distances = cdist(input_ready, centroids, metric="euclidean")
     zona = np.argmin(distances, axis=1)[0]
     
     zona_mapping = {
-        0: "Zona 0: Udara Sangat Bersih",
-        1: "Zona 1: Udara Cukup Bersih",
-        2: "Zona 2: Udara Tercemar",
-        3: "Zona 3: Udara Sangat Tercemar"
+        0: "Zona 1: Kualitas udara baik dengan kadar polutan rendah (CO, NO₂, PM2.5). Rasio kelembapan terhadap suhu tinggi, serta titik embun lebih rendah, menandakan kondisi lingkungan yang lebih sehat.",
+        1: "Zona 2: Konsentrasi SO₂ dan NO₂ sangat tinggi, serta peningkatan signifikan pada PM2.5 dan PM10. Indikasi bahwa area ini terdampak oleh aktivitas industri dan transportasi, sehingga perlu pengelolaan emisi yang lebih ketat.",
+        2: "Zona 3: Ozon lebih rendah dibanding cluster lain, tetapi terdapat peningkatan kadar PM2.5. Kemungkinan besar berasal dari lalu lintas kendaraan atau sumber polusi skala menengah.",
+        3: "Zona 4: Konsentrasi PM2.5 dan PM10 sangat tinggi, disertai dengan rasio kelembapan terhadap suhu yang juga meningkat. Area ini memiliki risiko kesehatan yang serius, terutama bagi kelompok rentan, sehingga memerlukan mitigasi segera"
     }
     zona_cluster = zona_mapping.get(zona, "Zona tidak dikenal")
 
