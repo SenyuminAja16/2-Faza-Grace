@@ -4,10 +4,11 @@ import streamlit as st
 import os
 from scipy.spatial.distance import cdist
 
-file_path = r'C:\Belajar Data\Intern BCC\2-Faza-Grace\Deploy\agg_clustering_Kelompok2.pkl'
-centroid_path = r"C:\Belajar Data\Intern BCC\2-Faza-Grace\Deploy\centroids.npy"
-scaler_path = r"C:\Belajar Data\Intern BCC\2-Faza-Grace\Deploy\scaler.pkl"
-encoder_path = r"C:\Belajar Data\Intern BCC\2-Faza-Grace\Deploy\encoder.pkl"
+base_path = os.path.dirname(__file__)
+file_path = os.path.join(base_path, "agg_clustering_Kelompok2.pkl")
+centroid_path = os.path.join(base_path, "centroids.npy")
+scaler_path = os.path.join(base_path, "scaler.pkl")
+encoder_path = os.path.join(base_path, "encoder.pkl")
 
 if not os.path.exists(file_path) or not os.path.exists(centroid_path):
     st.error("File model atau centroid tidak ditemukan.")
